@@ -11,3 +11,101 @@ bd<-fread(file="ukb49753.tab", sep='\t', header=T, stringsAsFactors = F)
 #bd<-fread(file="ukb49753.tab", sep='\t', header=T, quote="", stringsAsFactors = F) #In response to: Found and resolved improper quoting out-of-sample. First healed line 84910. If the fields are not quoted (e.g. field separator does not appear within any field), try quote="" to avoid this warning.
 ```
 
+Can generate counts for each category by running this code (will generate tables of results too):
+
+```{r}
+happy.hated<-table(bd$f.20487.0.0, bd$f.20458.0.0) #happy v hated as a child
+write.csv(happy.hated, "happy-hated_as_child.csv")
+
+happy.loved<-table(bd$f.20489.0.0, bd$f.20458.0.0) #happy v loved as a child
+write.csv(happy.loved, "happy-loved_as_child.csv")
+
+happy.phyAbus<-table(bd$f.20488.0.0, bd$f.20458.0.0) #happy v physically abused as child
+write.csv(happy.phyAbus, "happy-phys_abuse_as_child.csv")
+
+happy.sexAbus<-table(bd$f.20490.0.0, bd$f.20458.0.0) #happy v sexually abused as a child
+write.csv(happy.sexAbus, "happy-sex_abuse_as_child.csv")
+
+miser.hated<-table(bd$f.20487.0.0, bd$f.1930.0.0) #miserable v hated as a child
+write.csv(miser.hated, "miser-hated_as_child.csv")
+
+miser.loved<-table(bd$f.20489.0.0, bd$f.1930.0.0) #miserable v loved as a child
+write.csv(miser.loved, "miser-loved_as_child.csv")
+
+miser.phyAbus<-table(bd$f.20488.0.0, bd$f.1930.0.0) #miserable v physically abused as child
+write.csv(miser.phyAbus, "miserable-physical_abuse_as_child.csv")
+
+miser.sexAbus<-table(bd$f.20490.0.0, bd$f.1930.0.0) #miserable v sexually abused as a child
+write.csv(miser.sexAbus, "miserable-sex_abuse_as_child.csv")
+
+miser.happy<-table(bd$f.1930.0.0, bd$f.20458.0.0) #miserable le v happy
+write.csv(miser.happy, "miserable_happy.csv")
+
+hated.loved<-table(bd$f.20487.0.0, bd$f.20489.0.0) #felt loved v felt hated
+write.csv(hated.loved, "hated_loved_as_child.csv")
+```
+
+To further explore patterns, generate new columns that earmark whether the person endorses 'often' or 'very often' for hated as a child, physically abused and sexually abused.
+
+
+Then use these new columns to figure out how many have all 3, how many have 2 or more and how many have 1 or more
+
+
+Also generate a variable that indicates "happy" for 1,2,3 and unhappy for 4,5,6
+
+
+TRAUMA: "Physically and sexually molested", "Physically or sexually molested", "Neither" (never = 0, rarely, sometimes, often, very often = 1). So for each person look at their 'phyAbus' and 'sexAbus' columns
+
+```{r}
+bd<-bd %>% 
+	select(name, 20488) %>%
+	mutate(phyAbus = case_when(
+			20488=="2" ~ "1",
+			20488=="3" ~ "1",
+			20488=="4" ~ "1",
+			20488=="0" ~ "0",
+			20488=="1" ~ "1",
+			20488=="-818" ~ NA_character_
+
+))
+```
+
+
+
+```{r}
+bd<-bd %>% 
+	select(name, 20490) %>%
+	mutate(sexAbus = case_when(
+			20490=="2" ~ "1",
+			20490=="3" ~ "1",
+			20490=="4" ~ "1",
+			20490=="0" ~ "0",
+			20490=="1" ~ "1",
+			20490=="-818" ~ NA_character_
+
+))
+```
+
+
+
+```{r}
+bd <- bd %>%
+  mutate(trauma=case_when(
+    physAbus=="1" & sexAbus=="1" ~ "2",
+    physAbus=="1" & sexAbus=="0" ~ "1",
+    physAbus=="0" & sexAbus=="1" ~ "1",
+    physAbus=="0" & sexAbus=="0" ~ "0",
+    physAbus=="0" & is.na(sexAbus) ~ "0",
+    physAbus=="1" & is.na(sexAbus) ~ "1",
+    is.na(physAbus) & sexAbus=="1" ~ "1",
+    is.na(physAbus) & sexAbus=="0" ~ "0",
+    is.na(physAbus) & is.na(sexAbus) ~ "0"
+  ))
+```
+
+
+Then do table of TRAMUA v happiness
+
+
+Just as an aside, you can look at whether childhood adversity predicts adult adversity
+
