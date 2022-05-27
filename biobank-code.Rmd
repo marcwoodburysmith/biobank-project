@@ -1,0 +1,13 @@
+---
+title: "Biobank project"
+output: html_notebook
+---
+
+Read data into R
+```{r}
+setwd("~/IDrive-Sync/Biobank/data/")
+library(data.table)
+bd<-fread(file="ukb49753.tab", sep='\t', header=T, stringsAsFactors = F)
+#bd<-fread(file="ukb49753.tab", sep='\t', header=T, quote="", stringsAsFactors = F) #In response to: Found and resolved improper quoting out-of-sample. First healed line 84910. If the fields are not quoted (e.g. field separator does not appear within any field), try quote="" to avoid this warning.
+```
+
