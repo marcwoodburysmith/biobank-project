@@ -5,8 +5,9 @@ output: html_notebook
 
 Read data into R
 ```{r}
-setwd("~/IDrive-Sync/Biobank/data/")
+#setwd("~/IDrive-Sync/Biobank/data/")
 library(data.table)
+library(tidyverse)
 bd<-fread(file="ukb49753.tab", sep='\t', header=T, stringsAsFactors = F)
 #bd<-fread(file="ukb49753.tab", sep='\t', header=T, quote="", stringsAsFactors = F) #In response to: Found and resolved improper quoting out-of-sample. First healed line 84910. If the fields are not quoted (e.g. field separator does not appear within any field), try quote="" to avoid this warning.
 ```
@@ -58,53 +59,55 @@ TRAUMA: "Physically and sexually molested", "Physically or sexually molested", "
 
 ```{r}
 bd<-bd %>% 
-	select(name, 20488) %>%
-	mutate(phyAbus = case_when(
-			20488=="2" ~ "1",
-			20488=="3" ~ "1",
-			20488=="4" ~ "1",
-			20488=="0" ~ "0",
-			20488=="1" ~ "1",
-			20488=="-818" ~ NA_character_
+	#select(name, 20488) %>%
+	mutate(phyAbus = as.factor(case_when(
+			f.20488.0.0 =="2" ~ "1",
+			f.20488.0.0 =="3" ~ "1",
+			f.20488.0.0 =="4" ~ "1",
+			f.20488.0.0 =="0" ~ "0",
+			f.20488.0.0 =="1" ~ "1",
+			f.20488.0.0 =="-818" ~ NA_character_
 
-))
+)))
 ```
-
 
 
 ```{r}
 bd<-bd %>% 
-	select(name, 20490) %>%
-	mutate(sexAbus = case_when(
-			20490=="2" ~ "1",
-			20490=="3" ~ "1",
-			20490=="4" ~ "1",
-			20490=="0" ~ "0",
-			20490=="1" ~ "1",
-			20490=="-818" ~ NA_character_
+	#select(name, 20490) %>%
+	mutate(sexAbus = as.factor(case_when(
+			f.20490.0.0=="2" ~ "1",
+			f.20490.0.0=="3" ~ "1",
+			f.20490.0.0=="4" ~ "1",
+			f.20490.0.0=="0" ~ "0",
+			f.20490.0.0=="1" ~ "1",
+			f.20490.0.0=="-818" ~ NA_character_
 
-))
+)))
 ```
-
 
 
 ```{r}
 bd <- bd %>%
   mutate(trauma=case_when(
-    physAbus=="1" & sexAbus=="1" ~ "2",
-    physAbus=="1" & sexAbus=="0" ~ "1",
-    physAbus=="0" & sexAbus=="1" ~ "1",
-    physAbus=="0" & sexAbus=="0" ~ "0",
-    physAbus=="0" & is.na(sexAbus) ~ "0",
-    physAbus=="1" & is.na(sexAbus) ~ "1",
-    is.na(physAbus) & sexAbus=="1" ~ "1",
-    is.na(physAbus) & sexAbus=="0" ~ "0",
-    is.na(physAbus) & is.na(sexAbus) ~ "0"
+    phyAbus=="1" & sexAbus=="1" ~ "2",
+    phyAbus=="1" & sexAbus=="0" ~ "1",
+    phyAbus=="0" & sexAbus=="1" ~ "1",
+    phyAbus=="0" & sexAbus=="0" ~ "0",
+    phyAbus=="0" & is.na(sexAbus) ~ "0",
+    phyAbus=="1" & is.na(sexAbus) ~ "1",
+    is.na(phyAbus) & sexAbus=="1" ~ "1",
+    is.na(phyAbus) & sexAbus=="0" ~ "0",
+    is.na(phyAbus) & is.na(sexAbus) ~ NA_character_
   ))
 ```
 
 
-Then do table of TRAMUA v happiness
+Then do table of TRAMUA v happiness (20458)
+
+```{r}
+table(bd$trauma, bd$f.20458.0.0)
+```
 
 
 Just as an aside, you can look at whether childhood adversity predicts adult adversity
