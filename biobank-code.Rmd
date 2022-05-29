@@ -106,7 +106,8 @@ bd <- bd %>%
 Then do table of TRAMUA v happiness (20458)
 
 ```{r}
-table(bd$trauma, bd$f.20458.0.0)
+trauma<- table(bd$trauma, bd$f.20458.0.0)
+#write.table(trauma, file="trauma.csv")
 ```
 
 
