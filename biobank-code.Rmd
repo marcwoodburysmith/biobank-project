@@ -113,3 +113,52 @@ trauma<- table(bd$trauma, bd$f.20458.0.0)
 
 Just as an aside, you can look at whether childhood adversity predicts adult adversity
 
+For MASS: https://data.library.virginia.edu/fitting-and-interpreting-a-proportional-odds-model/
+
+```{r}
+class(bd$f.20458.0.0) #and change to factor if necessary
+bd$f.20458.0.0<-as.factor(bd$f.20458.0.0)
+class(bd$trauma)
+bd$trauma<-as.factor(bd$trauma)
+require(MASS)
+model <- polr(f.20458.0.0 ~ trauma, data = bd, Hess=TRUE)
+summary(model)
+
+```
+
+
+```{r}
+## store table
+(ctable <- coef(summary(m)))
+```
+
+
+```{r}
+## calculate and store p values
+p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
+
+## combined table
+(ctable <- cbind(ctable, "p value" = p))
+```
+
+
+
+
+
+```{r}
+(ci <- confint(m)) # default method gives profiled CIs
+```
+
+
+```{r}
+confint.default(m) # CIs assuming normality
+```
+
+
+```{r}
+predict(model, newdata = data.frame(trauma="0"), type="p")
+predict(model, newdata = data.frame(trauma="1"), type="p")
+predict(model, newdata = data.frame(trauma="2"), type="p")
+
+```
+
