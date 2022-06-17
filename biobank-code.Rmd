@@ -3,6 +3,15 @@ title: "Biobank project"
 output: html_notebook
 ---
 
+```{r}
+#if necessary clear the environment
+rm(list = ls())
+.rs.restartR()
+```
+
+
+
+
 Read data into R
 ```{r}
 #setwd("~/IDrive-Sync/Biobank/data/")
@@ -10,6 +19,10 @@ library(data.table)
 library(tidyverse)
 bd<-fread(file="ukb49753.tab", sep='\t', header=T, stringsAsFactors = F)
 #bd<-fread(file="ukb49753.tab", sep='\t', header=T, quote="", stringsAsFactors = F) #In response to: Found and resolved improper quoting out-of-sample. First healed line 84910. If the fields are not quoted (e.g. field separator does not appear within any field), try quote="" to avoid this warning.
+
+#bd<-fread(file="ukb49753.tab", sep='\t', header=T, quote="", stringsAsFactors = F) #In response to: Found and resolved improper quoting out-of-sample. First healed line 84910. If the fields are not quoted (e.g. field separator does not appear within any field), try quote="" to avoid this warning.
+
+#timing <- system.time(bd<-fread(file="ukb49753.tab", sep='\t', header=T, stringsAsFactors = F))
 ```
 
 Can generate counts for each category by running this code (will generate tables of results too):
